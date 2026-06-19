@@ -4,11 +4,20 @@ import Comment from "../model/comment.js";
 const router = Router();
 
 router.get("/", async (req, res) => {
-  const ALL_BLOGS = await Blog.find({}).sort({ CreatedAt: "descending" });
-  return res.render("blog", {
-    user: req.user,
-    Blogs: ALL_BLOGS,
-  });
+  try {
+    const ALL_BLOGS = await Blog.find({}).sort({ CreatedAt: "descending" });
+    return res.render("blog", {
+      user: req.user,
+      Blogs: ALL_BLOGS,
+    });
+  } catch (error) {
+    // DB unavailable (e.g. missing MONGODB_URI) — still render the page.
+    console.log("Error loading blogs:", error.message);
+    return res.render("blog", {
+      user: req.user,
+      Blogs: [],
+    });
+  }
 });
 
 router.get("/create", (req, res) => {

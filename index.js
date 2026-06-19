@@ -36,6 +36,12 @@ app.use("/user", checkForAuthentication, userStaticRoutes);
 app.use("/blogs", checkForAuthentication, blogRoutes);
 app.use("/user", userRoutes);
 
+// global error handler — never leave a request hanging on a blank page
+app.use((err, req, res, next) => {
+  console.log("Unhandled error:", err.message);
+  res.status(500).send("Something went wrong. Please try again later.");
+});
+
 // server connection
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Connnected To Server on port ${PORT}`));
