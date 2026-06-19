@@ -1,6 +1,7 @@
 import Blog from "../model/blog.js";
 
 async function handleCreateBlog(req, res) {
+  if (!req.user) return res.redirect("/user/login");
   const { title, body } = req.body;
 
   await Blog.create({
@@ -16,7 +17,14 @@ async function handleCreateBlog(req, res) {
 
 export const handleDeleteBlog = async (req, res) => {
   try {
+    if (!req.user) return res.redirect("/user/login");
     const { id } = req.params;
+    const blog = await Blog.findById(id);
+    if (!blog) return res.redirect("/blogs");
+    // Only the author can delete their own blog.
+    if (String(blog.generatedBy) !== String(req.user._id)) {
+      return res.status(403).send("You are not allowed to delete this blog.");
+    }
     await Blog.findByIdAndDelete(id);
     return res.redirect(`/user/profile/${req.user._id}`);
   } catch (error) {
@@ -36,7 +44,14 @@ export const getEditBlogPage = async (req, res) => {
 
 export const handleEditBlog = async (req, res) => {
   try {
+    if (!req.user) return res.redirect("/user/login");
     const { id } = req.params;
+    const blog = await Blog.findById(id);
+    if (!blog) return res.redirect("/blogs");
+    // Only the author can edit their own blog.
+    if (String(blog.generatedBy) !== String(req.user._id)) {
+      return res.status(403).send("You are not allowed to edit this blog.");
+    }
     const { title, body } = req.body;
     const updateData = {
       title,

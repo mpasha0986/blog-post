@@ -1,6 +1,8 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top z-3" data-bs-theme="dark">
+<nav class="navbar navbar-expand-lg sticky-top z-3" data-bs-theme="dark" style="background-color:#111827;">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">Blogify</a>
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+            <i class="bi bi-pencil-square text-primary"></i> Blogify
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -8,28 +10,31 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="/blogs">Blogs</a>
+                    <a class="nav-link" aria-current="page" href="/blogs"><i class="bi bi-house-door me-1"></i>Blogs</a>
                 </li>
+            </ul>
+            <ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
                 <% if (locals.user) { %>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/blogs/create">Create Blog</a>
+                    <li class="nav-item me-lg-2">
+                        <a class="btn btn-primary btn-sm" href="/blogs/create"><i class="bi bi-plus-lg me-1"></i>Create Blog</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-capitalize" role="button" data-bs-toggle="dropdown"
+                        <a class="nav-link dropdown-toggle text-capitalize d-flex align-items-center gap-2" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            <%= user.fullName %>
+                            <i class="bi bi-person-circle"></i> <%= user.fullName %>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/user/profile/<%= user._id %>">Profile</a></li>
-                            <li><a class="dropdown-item" href="/user/logout">Log out</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/user/profile/<%= user._id %>"><i class="bi bi-person me-2"></i>Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/user/logout"><i class="bi bi-box-arrow-right me-2"></i>Log out</a></li>
                         </ul>
                     </li>
                 <% } else { %>
                     <li class="nav-item">
-                        <a class="nav-link" href="/user/signup">Signup</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="/user/login">Login</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-primary btn-sm" href="/user/signup">Sign up</a>
                     </li>
                 <% } %>
             </ul>

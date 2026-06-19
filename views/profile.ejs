@@ -2,177 +2,149 @@
 <html lang="en">
 
 <head>
-    <title>Profile</title>
+    <title><%= locals.profileUser.fullName %> — Blogify</title>
     <%- include('./partials/head') %>
-        <style>
-            .profile-header {
-                margin-top: 20px;
-            }
-
-            .profile-info {
-                margin-top: 20px;
-            }
-
-            .profile-info .card {
-                margin-bottom: 20px;
-            }
-
-            .admin-badge {
-                color: white;
-                background-color: #007bff;
-                padding: 2px 8px;
-                border-radius: 4px;
-                font-size: 0.9em;
-                display: inline-block;
-                margin-top: 5px;
-            }
-
-            .blog-card img {
-                width: 100px;
-                height: 100px;
-                object-fit: cover;
-            }
-
-            .no-blogs {
-                text-align: center;
-                padding: 20px;
-                background-color: #f8f9fa;
-                border: 1px solid #dee2e6;
-                border-radius: 5px;
-            }
-
-            .profile-blogs .card-body {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .profile-blogs .card-title {
-                margin-bottom: 0;
-            }
-
-            .profile-blogs .btn-group {
-                display: flex;
-                gap: 10px;
-            }
-        </style>
+    <style>
+        .profile-cover {
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+            height: 140px;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            margin-top: -70px;
+            border: 4px solid #fff;
+        }
+        .blog-card img {
+            height: 160px;
+            object-fit: cover;
+        }
+    </style>
 </head>
 
 <body>
     <%- include('./partials/navbar') %>
-        <div class="container">
-            <!-- Profile Header -->
-            <div class="profile-header row align-items-center">
-                <div class="col-md-3 text-center">
-                    <img src="<%= locals.user.profilePictureURL %>" alt="<%= locals.user.fullName %>'s Profile Picture"
-                        class="border border-dark rounded-circle" width="150" height="150">
-                </div>
-                <div class="col-md-9">
-                    <h2 class="text-capitalize">
-                        <%= locals.user.fullName %>
-                    </h2>
-                    <p class="text-muted">@<%= locals.user.username %>
-                    </p>
-                    <% if (locals.user.role==="ADMIN" ) { %>
-                        <span class="admin-badge">Admin</span>
+    <% const isOwnProfile = locals.user && String(locals.user._id) === String(locals.profileUser._id); %>
+
+    <div class="container my-4" style="max-width: 960px;">
+        <!-- Profile header card -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="profile-cover"></div>
+            <div class="card-body text-center text-md-start">
+                <div class="row align-items-end">
+                    <div class="col-md-3 text-center">
+                        <img src="<%= locals.profileUser.profilePictureURL || '/images/default.jpg' %>"
+                            alt="<%= locals.profileUser.fullName %>" class="rounded-circle profile-avatar shadow-sm">
+                    </div>
+                    <div class="col-md-6 mt-3 mt-md-0">
+                        <h2 class="text-capitalize mb-0"><%= locals.profileUser.fullName %></h2>
+                        <p class="text-muted mb-1">@<%= locals.profileUser.username %></p>
+                        <% if (locals.profileUser.role === "ADMIN") { %>
+                            <span class="badge bg-primary">Admin</span>
                         <% } %>
-                            <div class="mt-3">
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">Delete Account</button>
-                            </div>
+                    </div>
+                    <% if (isOwnProfile) { %>
+                        <div class="col-md-3 mt-3 mt-md-0 text-md-end">
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#deleteAccountModal"><i class="bi bi-trash me-1"></i>Delete Account</button>
+                        </div>
+                    <% } %>
                 </div>
             </div>
+        </div>
 
-            <!-- Profile Info -->
-            <div class="profile-info">
-                <!-- About Section -->
-                <div class="card">
-                    <div class="card-header">About</div>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white fw-semibold">About</div>
                     <div class="card-body">
-                        <p class="card-text">
-                            <%= locals.user.bio || "This user hasn't added a bio yet." %>
-                        </p>
+                        <p class="card-text mb-0"><%= locals.profileUser.bio || "This user hasn't added a bio yet." %></p>
                     </div>
                 </div>
-
-                <!-- Contact Information Section -->
-                <div class="card">
-                    <div class="card-header">Contact Information</div>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white fw-semibold">Contact</div>
                     <div class="card-body">
-                        <p class="card-text">
-                            <strong>Email:</strong>
-                            <%= locals.user.email %>
-                        </p>
-                        <p class="card-text">
-                            <strong>Phone:</strong>
-                            <%= locals.user.phone %>
-                        </p>
+                        <p class="card-text mb-2"><i class="bi bi-envelope me-2 text-muted"></i><%= locals.profileUser.email %></p>
+                        <p class="card-text mb-0"><i class="bi bi-telephone me-2 text-muted"></i><%= locals.profileUser.phone || "—" %></p>
                     </div>
                 </div>
             </div>
 
             <!-- User Blogs -->
-            <% if (locals.blogs && locals.blogs.length > 0) { %>
-                <div class="profile-blogs my-5">
-                    <h3 class="mb-4">My Blogs</h3>
-                    <div class="row">
+            <div class="col-lg-8">
+                <h3 class="mb-3"><%= isOwnProfile ? "My Blogs" : "Blogs" %></h3>
+                <% if (locals.blogs && locals.blogs.length > 0) { %>
+                    <div class="row g-3">
                         <% blogs.forEach(blog => { %>
-                            <div class="col-md-4">
-                                <div class="card blog-card shadow-sm">
+                            <div class="col-sm-6">
+                                <div class="card card-hover blog-card h-100">
                                     <img src="<%= blog.coverImageUrl %>" class="card-img-top" alt="<%= blog.title %>">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><%= blog.title %></h5>
-                                        <div class="btn-group">
-                                            <a href="/blogs/<%= blog._id %>" class="btn btn-primary">Go</a>
-                                            <a href="/blogs/edit/<%= blog._id %>" class="btn btn-secondary">Edit</a>
-                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteBlogModal-<%= blog._id %>">Delete</button>
+                                    <div class="card-body d-flex flex-column">
+                                        <h6 class="card-title"><%= blog.title %></h6>
+                                        <div class="btn-group mt-auto pt-2" role="group">
+                                            <a href="/blogs/<%= blog._id %>" class="btn btn-sm btn-outline-primary">View</a>
+                                            <% if (isOwnProfile) { %>
+                                                <a href="/blogs/edit/<%= blog._id %>" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteBlogModal-<%= blog._id %>">Delete</button>
+                                            <% } %>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Delete Blog Modal -->
-                            <div class="modal fade" id="deleteBlogModal-<%= blog._id %>" tabindex="-1" aria-labelledby="deleteBlogModalLabel-<%= blog._id %>" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="deleteBlogModalLabel-<%= blog._id %>">Delete Blog</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            Are you sure you want to delete this blog?
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            <form method="get" action="/blogs/delete/<%= blog._id %>" class="d-inline">
-                                                <button type="submit" class="btn btn-danger">Delete</button>
-                                            </form>
+                            <% if (isOwnProfile) { %>
+                                <!-- Delete Blog Modal -->
+                                <div class="modal fade" id="deleteBlogModal-<%= blog._id %>" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Delete Blog</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Delete <strong><%= blog.title %></strong>? This cannot be undone.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form method="post" action="/blogs/delete/<%= blog._id %>" class="d-inline">
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            <% } %>
                         <% }) %>
                     </div>
-                </div>
-            <% } else { %>
-                <div class="profile-blogs mt-5">
-                    <div class="no-blogs">
-                        <h3 class="mb-4">No Blogs Found</h3>
-                        <p class="text-muted">You haven't written any blogs yet. Start writing your first blog now!</p>
+                <% } else { %>
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center py-5">
+                            <i class="bi bi-journal-x display-5 text-muted opacity-50"></i>
+                            <h5 class="mt-3">No blogs yet</h5>
+                            <% if (isOwnProfile) { %>
+                                <a href="/blogs/create" class="btn btn-primary mt-2">Write your first blog</a>
+                            <% } %>
+                        </div>
                     </div>
-                </div>
-            <% } %>
+                <% } %>
+            </div>
         </div>
+    </div>
 
-        <!-- Delete Account Modal -->
-        <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+    <!-- Delete Account Modal -->
+    <% if (isOwnProfile) { %>
+        <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="deleteAccountModalLabel">Delete Account</h5>
+                        <h5 class="modal-title">Delete Account</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        Are you sure you want to delete your account? This action cannot be undone.
+                        Are you sure you want to delete your account? All your blogs will be removed. This cannot be undone.
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -183,9 +155,9 @@
                 </div>
             </div>
         </div>
+    <% } %>
 
-        <%- include('./partials/script') %>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <%- include('./partials/script') %>
 </body>
 
 </html>

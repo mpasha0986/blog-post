@@ -63,9 +63,13 @@ async function handleDeleteAccount(req, res) {
 export const getUserProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findById(id);
-    const blogs = await Blog.find({ generatedBy: id });
-    res.render("profile", { user, blogs });
+    const profileUser = await User.findById(id);
+    if (!profileUser) return res.redirect("/blogs");
+    const blogs = await Blog.find({ generatedBy: id }).sort({
+      createdAt: "descending",
+    });
+    // `user` = the logged-in viewer (navbar + ownership); `profileUser` = whose profile this is.
+    res.render("profile", { user: req.user, profileUser, blogs });
   } catch (error) {
     res.status(500).json({ message: "Error fetching user profile" });
   }
