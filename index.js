@@ -10,7 +10,6 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { checkForAuthentication } from "./middleware/auth.js";
 const app = express();
-import utilRoute from "./routes/utilRoutes.js";
 
 // ejs
 app.set("view engine", "ejs");
@@ -36,7 +35,6 @@ app.use("/user", checkForAuthentication, userStaticRoutes);
 // routes
 app.use("/blogs", checkForAuthentication, blogRoutes);
 app.use("/user", userRoutes);
-app.use("/utils", utilRoute);
 
 // server connection
 const PORT = process.env.PORT || 3000;

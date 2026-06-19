@@ -1,7 +1,4 @@
 import Blog from "../model/blog.js";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 async function handleCreateBlog(req, res) {
   const { title, body } = req.body;
@@ -15,32 +12,6 @@ async function handleCreateBlog(req, res) {
     generatedBy: req.user._id,
   });
   return res.redirect("/blogs");
-}
-
-async function handleParaphrase(req, res) {
-  const { content } = req.body;
-  try {
-    const result = await model.generateContent(
-      content + "only one unique answer"
-    );
-    return res.json({ paraphrasedText: result.response.text() });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Failed to paraphrase content" });
-  }
-}
-
-async function handleGenerateContent(req, res) {
-  const { content } = req.body;
-  try {
-    const result = await model.generateContent(
-      `write a blog on ${content}. please avoid using any format. just plain text`
-    );
-    res.json({ generatedText: result.response.text() });
-  } catch (error) {
-    console.error("Error generating content:", error); // Log any errors
-    res.status(500).json({ error: "Failed to generate content" });
-  }
 }
 
 export const handleDeleteBlog = async (req, res) => {
@@ -81,4 +52,4 @@ export const handleEditBlog = async (req, res) => {
   }
 };
 
-export { handleCreateBlog, handleParaphrase, handleGenerateContent };
+export { handleCreateBlog };

@@ -22,31 +22,12 @@
             #editor-container {
                 height: 300px;
             }
-
-            .loading-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(255, 255, 255, 0.8);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 9999;
-                display: none;
-            }
         </style>
 </head>
 
 <body>
     <%- include('./partials/navbar') %>
         <div class="container position-relative">
-            <div class="loading-overlay" id="loadingOverlay">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
             <h2 class="text-center mt-2">Create Blog</h2>
             <form method="post" action="/blogs" enctype="multipart/form-data" id="blogForm">
                 <div class="mb-3">
@@ -64,8 +45,6 @@
                     <input type="file" class="form-control" name="coverImage" id="coverImage" />
                 </div>
                 <div class="d-flex gap-4 align-items-center">
-                    <button type="button" class="btn btn-success d-none" id="paraphraseButton">Paraphrase</button>
-                    <button type="button" class="btn btn-warning" id="generateButton">Generate Blog Content</button>
                     <button type="submit" class="btn btn-primary">Add</button>
                 </div>
             </form>
@@ -89,125 +68,8 @@
                     }
                 });
 
-                const paraphraseButton = document.getElementById('paraphraseButton');
-                const generateButton = document.getElementById('generateButton');
-                const addButton = document.querySelector('button[type="submit"]');
                 const hiddenBody = document.getElementById('hiddenBody');
                 const blogForm = document.getElementById('blogForm');
-                const loadingOverlay = document.getElementById('loadingOverlay');
-
-                function showLoadingOverlay() {
-                    loadingOverlay.style.display = 'flex';
-                }
-
-                function hideLoadingOverlay() {
-                    loadingOverlay.style.display = 'none';
-                }
-
-                quill.on('text-change', function () {
-                    if (quill.getText().trim().length > 0) {
-                        paraphraseButton.classList.remove('d-none');
-                    } else {
-                        paraphraseButton.classList.add('d-none');
-                    }
-                });
-
-                paraphraseButton.addEventListener('click', async function () {
-                    const content = quill.getText().trim();
-                    console.log("Content to paraphrase:", content); // Log the content to be sent
-                    if (content) {
-                        // Show loading overlay
-                        showLoadingOverlay();
-
-                        // Disable buttons
-                        generateButton.disabled = true;
-                        paraphraseButton.disabled = true;
-                        addButton.disabled = true;
-
-                        try {
-                            const res = await fetch('http://localhost:3000/utils/paraphrase', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({ content: content })
-                            });
-
-                            if (!res.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-
-                            const data = await res.json();
-                            console.log("Response from server:", data); // Log the response from the server
-
-                            if (data.paraphrasedText) {
-                                quill.setText(data.paraphrasedText);
-                            } else {
-                                alert('Failed to paraphrase content');
-                            }
-                        } catch (error) {
-                            console.error('Error:', error);
-                            alert('Failed to paraphrase content');
-                        } finally {
-                            // Hide loading overlay
-                            hideLoadingOverlay();
-
-                            // Re-enable buttons
-                            generateButton.disabled = false;
-                            paraphraseButton.disabled = false;
-                            addButton.disabled = false;
-                        }
-                    }
-                });
-
-                generateButton.addEventListener('click', async function () {
-                    const topic = prompt("Enter the topic you want to write a blog about:");
-                    if (topic) {
-                        console.log("Topic to generate blog:", topic); // Log the topic to be sent
-
-                        // Show loading overlay
-                        showLoadingOverlay();
-
-                        // Disable buttons
-                        generateButton.disabled = true;
-                        paraphraseButton.disabled = true;
-                        addButton.disabled = true;
-
-                        try {
-                            const res = await fetch('http://localhost:3000/utils/generate', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({ content: topic })
-                            });
-
-                            if (!res.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-
-                            const data = await res.json();
-                            console.log("Response from server:", data); // Log the response from the server
-
-                            if (data.generatedText) {
-                                quill.setText(data.generatedText);
-                            } else {
-                                alert('Failed to generate blog content');
-                            }
-                        } catch (error) {
-                            console.error('Error:', error);
-                            alert('Failed to generate blog content');
-                        } finally {
-                            // Hide loading overlay
-                            hideLoadingOverlay();
-
-                            // Re-enable buttons
-                            generateButton.disabled = false;
-                            paraphraseButton.disabled = false;
-                            addButton.disabled = false;
-                        }
-                    }
-                });
 
                 blogForm.addEventListener('submit', function (e) {
                     hiddenBody.value = quill.root.innerHTML;
