@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Home Page</title>
+    <%- include('./partials/head') %>
+        <style>
+            .blog-img-top {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+            }
+        </style>
+</head>
+
+<body>
+    <%- include('./partials/navbar') %>
+        <div class="container mt-5">
+            <div class="row">
+                <% if (locals.Blogs && Blogs.length> 0) { %>
+                    <% Blogs.forEach(blog=> { %>
+                        <div class="col-md-4 col-sm-6 mb-4"> <!-- Responsive columns -->
+                            <div class="single-blog card d-flex flex-column" style="height: 100%;">
+                                <img class="blog-img-top card-img-top" src="<%= blog.coverImageUrl %>"
+                                    alt="<%= blog.title %>">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="blog-title card-title"><%- blog.title %></h5>
+                                    <a href="/blogs/<%= blog._id %>" class="btn btn-primary mt-auto">View</a>
+                                </div>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <div class="alert alert-primary" role="alert">
+                                    No Blogs To Read
+                                </div>
+                                <% } %>
+            </div>
+        </div>
+
+        <%- include('./partials/script') %>
+</body>
+
+</html>

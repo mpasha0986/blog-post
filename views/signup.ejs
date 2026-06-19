@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Sign Up</title>
+    <%- include('./partials/head') %>
+        <style>
+            @media (max-width: 576px) {
+                h2 {
+                    font-size: 1.5rem;
+                    /* Adjust heading size for smaller screens */
+                }
+            }
+        </style>
+</head>
+
+<body>
+    <%- include('./partials/navbar') %>
+        <div class="container mt-5">
+            <% if (locals.error) { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <p>
+                        <%= locals.error %>
+                    </p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <% } %>
+                    <h2 class="text-center mb-3">Sign Up</h2>
+                    <form method="post" action="/user/signup" enctype="multipart/form-data">
+                        <div class="row">
+                            <!-- Full Name -->
+                            <div class="mb-3 col-md-6">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" name="fullName" id="fullName" required>
+                            </div>
+
+                            <!-- Username -->
+                            <div class="mb-3 col-md-6">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" name="username" id="username" required>
+                            </div>
+                        </div>
+
+                        <!-- Bio -->
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control" name="bio" id="bio" rows="3"
+                                style="resize: none;"></textarea>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" name="email" id="email" required>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" name="password" id="password" required>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" name="confirmPassword" id="confirmPassword"
+                                required>
+                        </div>
+
+                        <!-- Profile Picture -->
+                        <div class="mb-3">
+                            <label for="profilePicture" class="form-label">Profile Picture</label>
+                            <input type="file" class="form-control" name="profilePicture" id="profilePicture"
+                                accept="image/*">
+                        </div>
+
+                        <!-- Sign Up Button -->
+                        <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                    </form>
+
+                    <!-- Already have an account -->
+                    <div class="text-center mt-3">
+                        <p>Already have an account? <a href="/user/login">Log In</a></p>
+                    </div>
+        </div>
+        <%- include('./partials/script') %>
+</body>
+
+</html>
