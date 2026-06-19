@@ -23,9 +23,15 @@ app.use(express.static(path.resolve("./public")));
 
 // connection
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/blogify";
+// Log the target host (password hidden) so deploy logs show what we connect to.
+const SAFE_URI = MONGODB_URI.replace(/\/\/([^:/@]+):([^@]+)@/, "//$1:****@");
+console.log("MONGODB_URI in use:", SAFE_URI);
+if (!process.env.MONGODB_URI) {
+  console.log("WARNING: MONGODB_URI env var is NOT set — using localhost fallback.");
+}
 mongoConnection(MONGODB_URI)
   .then(() => console.log("Connected To MongoDB"))
-  .catch((err) => console.log("Error Connecting To MongoDB", err.message));
+  .catch((err) => console.log("Error Connecting To MongoDB:", err.message));
 
 // static routes
 app.get("/", (req, res) => res.redirect("/blogs"));
