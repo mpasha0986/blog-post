@@ -22,7 +22,9 @@ app.use(cookieParser());
 app.use(express.static(path.resolve("./public")));
 
 // connection
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/blogify";
+// .trim() guards against stray whitespace/newlines pasted into the env var,
+// which otherwise causes an "Invalid scheme" connection error.
+const MONGODB_URI = (process.env.MONGODB_URI || "mongodb://localhost/blogify").trim();
 // Log the target host (password hidden) so deploy logs show what we connect to.
 const SAFE_URI = MONGODB_URI.replace(/\/\/([^:/@]+):([^@]+)@/, "//$1:****@");
 console.log("MONGODB_URI in use:", SAFE_URI);
